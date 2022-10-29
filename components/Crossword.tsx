@@ -17,7 +17,7 @@ type Word = {
   direction: 'across' | 'down';
   start: {column: number; row: number};
   length: number;
-  letters: string;
+  letters: string[];
   valid: boolean;
 };
 
@@ -37,7 +37,7 @@ const Crossword = () => {
   const [words, setWords] = useState<Word[]>([]);
 
   const discoverWords = (squares, direction: Word['direction'], index: number): Word[] => {
-    const downSquares = Object.values(squares);
+    const downSquares: (string | null)[] = Object.values(squares);
     return downSquares.reduce((words: Word[], square, i) => {
       if (typeof square === 'string' && [undefined, null].includes(downSquares[i - 1])) {
         const nextNull = downSquares.indexOf(null, i);
