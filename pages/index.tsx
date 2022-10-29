@@ -1,3 +1,7 @@
-const IndexPage = () => <h1>Hello Next.js 👋</h1>;
+import Crossword from '../components/Crossword';
+
+const IndexPage = () => {
+  return <Crossword />;
+};
 
 export default IndexPage;
