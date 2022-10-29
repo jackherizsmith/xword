@@ -1,5 +1,14 @@
 import React, {ReactNode} from 'react';
 import Head from 'next/head';
+import styled from 'styled-components';
+
+namespace S {
+  export const Page = styled.div`
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    min-height: 100vh;
+  `;
+}
 
 type Props = {
   children?: ReactNode;
@@ -7,18 +16,20 @@ type Props = {
 };
 
 const Layout = ({children, title = 'This is the default title'}: Props) => (
-  <div>
+  <S.Page>
     <Head>
       <title>{title}</title>
       <meta charSet="utf-8" />
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
     </Head>
+    <nav></nav>
     {children}
+    <div />
     <footer>
       <hr />
       <span>I'm here to stay (Footer)</span>
     </footer>
-  </div>
+  </S.Page>
 );
 
 export default Layout;
