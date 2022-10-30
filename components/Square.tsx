@@ -11,11 +11,10 @@ namespace S {
     background: ${({colour}) => colour};
     border: 0.5px solid black;
     display: flex;
+    height: 100%;
     justify-content: center;
-    height: 40px;
     position: relative;
     text-transform: capitalize;
-    width: 40px;
     ${({order}) =>
       order > 0 &&
       css`

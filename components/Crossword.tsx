@@ -4,11 +4,26 @@ import Square, {Colour} from './Square';
 
 namespace S {
   export const Grid = styled.div`
-    display: flex;
-    margin: 3rem auto;
+    display: grid;
+    font-size: 0.8rem;
+    grid-template-rows: repeat(15, 1fr);
+    margin: 5vw auto;
+    height: 500px;
+    max-height: 90vw;
+    max-width: 90vw;
+    width: 500px;
+    @media (min-width: 420px) {
+      font-size: 1rem;
+    }
+    @media (min-width: 600px) {
+      margin: 3rem auto;
+    }
   `;
 
-  export const Row = styled.div``;
+  export const Row = styled.div`
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+  `;
 }
 
 const GRID = 15;
@@ -70,7 +85,7 @@ const Crossword = () => {
     const acrossWords: Word[] = across.flatMap((squares, i) => discoverWords(squares, 'across', i));
     let order = 0;
     const sortedWords = [...acrossWords, ...downWords].sort(
-      (a, b) => a.start.row * GRID + a.start.column - (b.start.row * GRID + b.start.column),
+      (a, b) => a.start.column * GRID + a.start.row - (b.start.column * GRID + b.start.row),
     );
     const orderedWords = sortedWords.map((word, i, arr) => {
       const firstInstance = arr.findIndex(({start: {row: firstRow, column: firstColumn}}) => {
