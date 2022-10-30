@@ -15,9 +15,10 @@ const GRID = 15;
 
 type Word = {
   direction: 'across' | 'down';
-  start: {column: number; row: number};
+  order: number;
   length: number;
   letters: string[];
+  start: {column: number; row: number};
   valid: boolean;
 };
 
@@ -37,22 +38,23 @@ const Crossword = () => {
   const [words, setWords] = useState<Word[]>([]);
 
   const discoverWords = (squares, direction: Word['direction'], index: number): Word[] => {
-    const downSquares: (string | null)[] = Object.values(squares);
-    return downSquares.reduce((words: Word[], square, i) => {
-      if (typeof square === 'string' && [undefined, null].includes(downSquares[i - 1])) {
-        const nextNull = downSquares.indexOf(null, i);
-        const word = downSquares.slice(i, nextNull > 0 ? nextNull : downSquares.length);
+    const directionSquares: (string | null)[] = Object.values(squares);
+    return directionSquares.reduce((words: Word[], square, i) => {
+      if (typeof square === 'string' && [undefined, null].includes(directionSquares[i - 1])) {
+        const nextNull = directionSquares.indexOf(null, i);
+        const word = directionSquares.slice(i, nextNull > 0 ? nextNull : directionSquares.length);
         if (word.length < 3) {
           return words;
         }
         return [
           ...words,
           {
-            start: direction == 'across' ? {row: index, column: i} : {row: i, column: index},
-            length: word.length,
             direction,
-            valid: word.length > 2,
+            length: word.length,
             letters: word,
+            order: 0,
+            start: direction == 'across' ? {row: index, column: i} : {row: i, column: index},
+            valid: word.length > 2,
           },
         ];
       } else {
@@ -66,7 +68,18 @@ const Crossword = () => {
     const across = Object.keys(grid).map((row) => Object.keys(grid[row]).map((col) => grid[col][row]));
     const downWords: Word[] = down.flatMap((squares, i) => discoverWords(squares, 'down', i));
     const acrossWords: Word[] = across.flatMap((squares, i) => discoverWords(squares, 'across', i));
-    setWords([...acrossWords, ...downWords]);
+    let order = 0;
+    const sortedWords = [...acrossWords, ...downWords].sort(
+      (a, b) => a.start.row * GRID + a.start.column - (b.start.row * GRID + b.start.column),
+    );
+    const orderedWords = sortedWords.map((word, i, arr) => {
+      const firstInstance = arr.findIndex(({start: {row: firstRow, column: firstColumn}}) => {
+        return firstRow === word.start.row && firstColumn === word.start.column;
+      });
+      if (firstInstance === i) order += 1;
+      return {...word, order};
+    });
+    setWords(orderedWords);
   }, [grid]);
 
   const toggleSquare = (row: number, column: number) => {
@@ -89,21 +102,25 @@ const Crossword = () => {
     if (grid[column][row] === null) {
       return 'black';
     }
-    if (words.find((word) => word.start.row === row && word.start.column === column)) {
-      return 'lightblue';
-    }
     return 'white';
   };
+
+  if (!words.length) {
+    return null;
+  }
 
   return (
     <S.Grid>
       {Object.keys(grid).map((column, i) => (
         <S.Row key={i}>
-          {Object.keys(grid[column]).map((row, j) => (
-            <div onClick={() => toggleSquare(+row, +column)} key={`${i}-${j}`}>
-              <Square colour={getColour(+row, +column)} />
-            </div>
-          ))}
+          {Object.keys(grid[column]).map((row, j) => {
+            const thisWord = words.find(({start}) => start.row === +row && start.column === +column);
+            return (
+              <div onClick={() => toggleSquare(+row, +column)} key={`${i}-${j}`}>
+                <Square colour={getColour(+row, +column)} order={thisWord?.order} />
+              </div>
+            );
+          })}
         </S.Row>
       ))}
     </S.Grid>

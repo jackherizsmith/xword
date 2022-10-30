@@ -1,8 +1,9 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 
 namespace S {
   type BoxProps = {
     colour: Colour;
+    order?: number;
   };
 
   export const Box = styled.div<BoxProps>`
@@ -12,8 +13,19 @@ namespace S {
     display: flex;
     justify-content: center;
     height: 40px;
+    position: relative;
     text-transform: capitalize;
     width: 40px;
+    ${({order}) =>
+      order > 0 &&
+      css`
+        :after {
+          content: '${order}';
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+      `}
   `;
 }
 
@@ -22,10 +34,15 @@ export type Colour = 'red' | 'black' | 'white' | 'lightblue';
 type SquareProps = {
   colour?: Colour;
   letter?: string;
+  order?: number;
 };
 
-const Square = ({colour = 'white', letter}: SquareProps) => {
-  return <S.Box colour={colour}>{letter}</S.Box>;
+const Square = ({colour = 'white', letter, order}: SquareProps) => {
+  return (
+    <S.Box colour={colour} order={order}>
+      {letter}
+    </S.Box>
+  );
 };
 
 export default Square;
