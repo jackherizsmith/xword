@@ -13,7 +13,7 @@ namespace S {
     max-width: 90vw;
     width: 500px;
     @media (min-width: 420px) {
-      font-size: 1rem;
+      font-size: 0.9rem;
     }
     @media (min-width: 600px) {
       margin: 3rem auto;
@@ -143,3 +143,5 @@ const Crossword = () => {
 };
 
 export default Crossword;
+
+// http://sphinx.mythic-beasts.com/~mark/random/indicators/
